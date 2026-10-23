@@ -52,9 +52,13 @@ def get_results():
 
 
 @st.cache_resource
+def _load_model(name):
+    return joblib.load(MODEL_DIR / f"{name}.joblib")
+
+
 def get_model(name):
-    p = MODEL_DIR / f"{name}.joblib"
-    return joblib.load(p) if p.exists() else None
+    # Missing files are not cached, so a redeploy that adds them is picked up immediately.
+    return _load_model(name) if (MODEL_DIR / f"{name}.joblib").exists() else None
 
 
 def csv(name):
