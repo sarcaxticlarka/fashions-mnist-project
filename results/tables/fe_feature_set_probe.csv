@@ -1,0 +1,4 @@
+feature_set,dim,val_acc,fit_s
+pixels,784,0.855,4.9
+hog,864,0.8843333333333333,4.3
+hog_stats,880,0.8890833333333333,5.3
