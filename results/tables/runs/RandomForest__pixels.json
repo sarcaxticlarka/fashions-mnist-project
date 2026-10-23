@@ -1,0 +1,72 @@
+{
+  "model": "RandomForest",
+  "features": "pixels",
+  "dim": 784,
+  "best_params": {
+    "n_estimators": 300,
+    "max_depth": 20,
+    "min_samples_leaf": 1
+  },
+  "search": [
+    {
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 20,
+        "min_samples_leaf": 1
+      },
+      "val_acc": 0.8861666666666667,
+      "val_macro_f1": 0.8850466336641667,
+      "sec": 20.4
+    },
+    {
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 20,
+        "min_samples_leaf": 2
+      },
+      "val_acc": 0.8844166666666666,
+      "val_macro_f1": 0.8832468199200999,
+      "sec": 20.4
+    },
+    {
+      "params": {
+        "n_estimators": 300,
+        "max_depth": null,
+        "min_samples_leaf": 1
+      },
+      "val_acc": 0.88475,
+      "val_macro_f1": 0.8836767126799628,
+      "sec": 21.7
+    },
+    {
+      "params": {
+        "n_estimators": 300,
+        "max_depth": null,
+        "min_samples_leaf": 2
+      },
+      "val_acc": 0.88375,
+      "val_macro_f1": 0.8826353646147961,
+      "sec": 18.5
+    }
+  ],
+  "val_acc": 0.8861666666666667,
+  "fit_seconds": 22.8,
+  "infer_ms_per_image": 0.037263107299804685,
+  "params": 2542500,
+  "params_note": "(feature, threshold) per internal node",
+  "accuracy": 0.876,
+  "macro_f1": 0.874597485861543,
+  "macro_precision": 0.8752756667780466,
+  "per_class_recall": {
+    "T-shirt/top": 0.863,
+    "Trouser": 0.961,
+    "Pullover": 0.791,
+    "Dress": 0.907,
+    "Coat": 0.819,
+    "Sandal": 0.955,
+    "Shirt": 0.587,
+    "Sneaker": 0.955,
+    "Bag": 0.973,
+    "Ankle boot": 0.949
+  }
+}

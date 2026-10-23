@@ -1,0 +1,62 @@
+{
+  "model": "LogReg",
+  "features": "pixels",
+  "dim": 784,
+  "best_params": {
+    "C": 0.01
+  },
+  "search": [
+    {
+      "params": {
+        "C": 0.001
+      },
+      "val_acc": 0.8576666666666667,
+      "val_macro_f1": 0.8568770977962519,
+      "sec": 7.0
+    },
+    {
+      "params": {
+        "C": 0.01
+      },
+      "val_acc": 0.86325,
+      "val_macro_f1": 0.8625899750140356,
+      "sec": 7.2
+    },
+    {
+      "params": {
+        "C": 0.1
+      },
+      "val_acc": 0.8570833333333333,
+      "val_macro_f1": 0.8565663355394492,
+      "sec": 7.1
+    },
+    {
+      "params": {
+        "C": 1.0
+      },
+      "val_acc": 0.8498333333333333,
+      "val_macro_f1": 0.8491380090438436,
+      "sec": 7.0
+    }
+  ],
+  "val_acc": 0.86325,
+  "fit_seconds": 8.8,
+  "infer_ms_per_image": 0.001338791847229004,
+  "params": 7850,
+  "params_note": "weights + biases",
+  "accuracy": 0.8456,
+  "macro_f1": 0.844748583062289,
+  "macro_precision": 0.844499093601294,
+  "per_class_recall": {
+    "T-shirt/top": 0.813,
+    "Trouser": 0.956,
+    "Pullover": 0.739,
+    "Dress": 0.875,
+    "Coat": 0.76,
+    "Sandal": 0.923,
+    "Shirt": 0.569,
+    "Sneaker": 0.94,
+    "Bag": 0.939,
+    "Ankle boot": 0.942
+  }
+}

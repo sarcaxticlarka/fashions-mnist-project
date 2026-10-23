@@ -1,0 +1,54 @@
+{
+  "model": "SVM-RBF",
+  "features": "pixels",
+  "dim": 784,
+  "best_params": {
+    "C": 5.0
+  },
+  "search": [
+    {
+      "params": {
+        "C": 1.0
+      },
+      "val_acc": 0.8779166666666667,
+      "val_macro_f1": 0.8770443398368796,
+      "sec": 31.8
+    },
+    {
+      "params": {
+        "C": 5.0
+      },
+      "val_acc": 0.88875,
+      "val_macro_f1": 0.8883642785662633,
+      "sec": 27.9
+    },
+    {
+      "params": {
+        "C": 20.0
+      },
+      "val_acc": 0.8861666666666667,
+      "val_macro_f1": 0.8858733414824872,
+      "sec": 28.0
+    }
+  ],
+  "val_acc": 0.88875,
+  "fit_seconds": 192.2,
+  "infer_ms_per_image": 4.526643991470337,
+  "params": 14975057,
+  "params_note": "support vectors + dual coefficients",
+  "accuracy": 0.8988,
+  "macro_f1": 0.898515051606514,
+  "macro_precision": 0.8985096040652616,
+  "per_class_recall": {
+    "T-shirt/top": 0.862,
+    "Trouser": 0.97,
+    "Pullover": 0.83,
+    "Dress": 0.911,
+    "Coat": 0.838,
+    "Sandal": 0.968,
+    "Shirt": 0.705,
+    "Sneaker": 0.966,
+    "Bag": 0.979,
+    "Ankle boot": 0.959
+  }
+}

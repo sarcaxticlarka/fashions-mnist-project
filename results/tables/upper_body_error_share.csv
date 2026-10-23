@@ -1,0 +1,13 @@
+model,features,errors,upper_body_confusions,share_pct
+LogReg,hog,1148,712,62.0
+RandomForest,hog,1219,706,57.9
+SVM-RBF,hog,870,552,63.4
+kNN,hog,1226,780,63.6
+LogReg,hog_stats,1106,688,62.2
+RandomForest,hog_stats,1179,700,59.4
+SVM-RBF,hog_stats,863,547,63.4
+kNN,hog_stats,1224,781,63.8
+LogReg,pixels,1544,914,59.2
+RandomForest,pixels,1240,800,64.5
+SVM-RBF,pixels,1012,656,64.8
+kNN,pixels,1439,892,62.0

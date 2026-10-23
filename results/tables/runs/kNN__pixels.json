@@ -1,0 +1,85 @@
+{
+  "model": "kNN",
+  "features": "pixels",
+  "dim": 784,
+  "best_params": {
+    "k": 3,
+    "weights": "distance"
+  },
+  "search": [
+    {
+      "params": {
+        "k": 3,
+        "weights": "uniform"
+      },
+      "val_acc": 0.85625,
+      "val_macro_f1": 0.8563302343216541,
+      "sec": 3.4
+    },
+    {
+      "params": {
+        "k": 3,
+        "weights": "distance"
+      },
+      "val_acc": 0.8591666666666666,
+      "val_macro_f1": 0.8595706093635475,
+      "sec": 3.6
+    },
+    {
+      "params": {
+        "k": 5,
+        "weights": "uniform"
+      },
+      "val_acc": 0.85725,
+      "val_macro_f1": 0.856919076287698,
+      "sec": 3.4
+    },
+    {
+      "params": {
+        "k": 5,
+        "weights": "distance"
+      },
+      "val_acc": 0.8584166666666667,
+      "val_macro_f1": 0.8584910270751076,
+      "sec": 3.5
+    },
+    {
+      "params": {
+        "k": 9,
+        "weights": "uniform"
+      },
+      "val_acc": 0.8559166666666667,
+      "val_macro_f1": 0.8555025901508317,
+      "sec": 2.7
+    },
+    {
+      "params": {
+        "k": 9,
+        "weights": "distance"
+      },
+      "val_acc": 0.8579166666666667,
+      "val_macro_f1": 0.8578833881554037,
+      "sec": 2.9
+    }
+  ],
+  "val_acc": 0.8591666666666666,
+  "fit_seconds": 0.1,
+  "infer_ms_per_image": 0.3155985832214355,
+  "params": 47040000,
+  "params_note": "stored training matrix (non-parametric)",
+  "accuracy": 0.8561,
+  "macro_f1": 0.8563803199153629,
+  "macro_precision": 0.8591473123844139,
+  "per_class_recall": {
+    "T-shirt/top": 0.83,
+    "Trouser": 0.973,
+    "Pullover": 0.796,
+    "Dress": 0.868,
+    "Coat": 0.763,
+    "Sandal": 0.832,
+    "Shirt": 0.619,
+    "Sneaker": 0.952,
+    "Bag": 0.954,
+    "Ankle boot": 0.974
+  }
+}

@@ -1,0 +1,13 @@
+model,features,accuracy,ci_low,ci_high
+SVM-RBF,hog_stats,0.9137,0.9084,0.9191
+SVM-RBF,hog,0.913,0.9076,0.9185
+SVM-RBF,pixels,0.8988,0.8931,0.9045025
+LogReg,hog_stats,0.8894,0.8832,0.8950025
+LogReg,hog,0.8852,0.8793974999999999,0.8908
+RandomForest,hog_stats,0.8821,0.8755975,0.8886
+RandomForest,hog,0.8781,0.8715,0.8845
+kNN,hog_stats,0.8776,0.8712,0.8838
+kNN,hog,0.8774,0.8712,0.8838
+RandomForest,pixels,0.876,0.8698,0.8823
+kNN,pixels,0.8561,0.848895,0.8631
+LogReg,pixels,0.8456,0.8386,0.8524
