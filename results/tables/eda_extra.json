@@ -1,0 +1,13 @@
+{
+  "near_constant_pixels(var<1e-3)": 31,
+  "pca_components_for_variance": {
+    "0.8": 24,
+    "0.9": 84,
+    "0.95": 187
+  },
+  "train_test_shift": {
+    "ks_stat": 0.006433337926864624,
+    "ks_pvalue": 0.8677271604537964,
+    "max_abs_mean_pixel_diff": 0.008567824959754944
+  }
+}

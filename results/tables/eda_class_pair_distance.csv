@@ -1,0 +1,46 @@
+class_a,class_b,mean_image_distance
+Pullover,Coat,2.4826777
+Pullover,Shirt,2.675163
+Coat,Shirt,3.0231698
+T-shirt/top,Shirt,3.716013
+Sandal,Sneaker,3.838488
+Trouser,Dress,4.099473
+T-shirt/top,Dress,4.509928
+Dress,Shirt,5.2998157
+Shirt,Bag,5.3627057
+T-shirt/top,Pullover,5.6173105
+T-shirt/top,Coat,5.776873
+Pullover,Bag,5.7868633
+Coat,Bag,6.10739
+Bag,Ankle boot,6.156409
+T-shirt/top,Trouser,6.457541
+Dress,Coat,6.8302307
+Trouser,Shirt,7.0038123
+Sandal,Ankle boot,7.0246687
+Pullover,Dress,7.192165
+Sneaker,Ankle boot,7.214151
+Sneaker,Bag,7.408123
+Sandal,Bag,7.500022
+T-shirt/top,Bag,7.5555778
+Shirt,Ankle boot,8.172546
+Dress,Bag,8.19624
+Sandal,Shirt,8.297378
+Trouser,Coat,8.317395
+Trouser,Pullover,8.46146
+Pullover,Ankle boot,8.628474
+Dress,Sandal,8.866942
+Shirt,Sneaker,8.978266
+Trouser,Sandal,9.088985
+Coat,Ankle boot,9.125166
+T-shirt/top,Sandal,9.498267
+Dress,Sneaker,9.524299
+Pullover,Sandal,9.552402
+T-shirt/top,Ankle boot,9.571235
+Trouser,Bag,9.705855
+Dress,Ankle boot,9.747156
+Trouser,Sneaker,9.884619
+Pullover,Sneaker,9.982721
+T-shirt/top,Sneaker,10.252388
+Coat,Sandal,10.328418
+Coat,Sneaker,10.550266
+Trouser,Ankle boot,10.742022
