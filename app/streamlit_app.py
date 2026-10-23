@@ -292,6 +292,9 @@ elif page == PAGES[5]:
     st.caption("Classify a test-set image, or upload your own garment photo (it is converted to a 28×28 grayscale image).")
     models = {n: get_model(n) for n in ("LogReg__hog", "SVM-RBF__hog", "LogReg__pixels", "SVM-RBF__pixels")}
     models = {k: v for k, v in models.items() if v is not None}
+    if not models:
+        st.error("No trained models found in results/models. Run `python scripts/03_train_models.py` first.")
+        st.stop()
     src = st.radio("Source", ["Test-set image", "Upload"], horizontal=True)
     img = truth = None
     if src == "Test-set image":

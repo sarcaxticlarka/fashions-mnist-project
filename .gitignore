@@ -2,7 +2,7 @@
 __pycache__/
 .ipynb_checkpoints/
 data/processed/
-results/models/*.joblib
+results/models/SVM-RBF__hog_stats.joblib
 results/*_log*.txt
 report/*.aux
 report/*.log
