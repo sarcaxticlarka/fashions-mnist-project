@@ -20,6 +20,7 @@ CLASS_NAMES = [
     "T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
     "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot",
 ]
+NUM_CLASSES = len(CLASS_NAMES)
 # The four upper-body garments that are expected to be confused with each other.
 UPPER_BODY = ["T-shirt/top", "Pullover", "Coat", "Shirt"]
 

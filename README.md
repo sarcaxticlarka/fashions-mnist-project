@@ -27,6 +27,10 @@ The project includes a comprehensive, interactive Streamlit diagnostic and prese
 - **Head-to-Head Model Comparator**: Real-time evaluation of any two models side-by-side: calculates accuracy delta, macro-F1 gain, parameter counts, and inference latency speedup ratios.
 - **Interactive Confusion Pair Inspector**: Diagnostic visual tool allowing evaluators to select specific misclassification pairs (e.g. *Shirt $\to$ T-shirt*) to view the exact error instances.
 
+## Dataset
+Fashion-MNIST by Zalando Research — 70,000 grayscale 28×28 images across 10 clothing classes
+(60k train / 10k test). Source: <https://github.com/zalandoresearch/fashion-mnist>.
+
 ## Folder structure
 
 ```
