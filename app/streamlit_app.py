@@ -1,6 +1,5 @@
 """Interactive Phase-1 presentation: Fashion-MNIST handcrafted features vs. classical ML.
 
-Frontend & UI/UX Engineering by Sibtain Ahmed Qureshi.
 Run:  streamlit run app/streamlit_app.py
 """
 import json
@@ -158,16 +157,6 @@ h1, h2, h3, h4 {
         border-color: #334155;
     }
 }
-
-/* Sidebar attribution */
-.sidebar-footer {
-    padding: 12px 14px;
-    background: rgba(76, 114, 176, 0.08);
-    border-radius: 10px;
-    border-left: 3px solid #4C72B0;
-    font-size: 0.8rem;
-    margin-top: 20px;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -242,13 +231,6 @@ page = st.sidebar.radio("Navigate Studio", PAGES)
 
 st.sidebar.markdown("---")
 st.sidebar.caption("**Project 11 · Phase 1 Deliverable**\nRaw Pixels vs. HOG Descriptors with Classical Classifiers.")
-
-st.sidebar.markdown("""
-<div class="sidebar-footer">
-  <b>🎨 Frontend & UI/UX Architecture</b><br>
-  <span style="font-size:0.72rem; color:#777;">Interactive Studio & Visual Analytics</span>
-</div>
-""", unsafe_allow_html=True)
 
 S = get_splits()
 
