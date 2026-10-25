@@ -61,10 +61,38 @@ Requires Python 3.12. Commands assume you are in the repository root.
 
 ```bash
 uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python -r requirements.txt
-bash scripts/run_all.sh                       # everything (~25 min); or run steps individually
-.venv/bin/streamlit run app/streamlit_app.py  # presentation
-cd report && tectonic main.tex                # or upload report/ to Overleaf (pdflatex)
+.venv/bin/streamlit run app/streamlit_app.py
 ```
+
+The raw dataset, result tables, figures and demo models are included, so you can
+launch the presentation without retraining. The live demo uses the saved pixel
+and HOG models in `results/models/`.
+
+To regenerate the experiment outputs and execute the notebooks:
+
+```bash
+bash scripts/run_all.sh                       # full pipeline (~25 min)
+# Or select another environment (with requirements.txt installed):
+PY="/path/to/environment/bin/python" bash scripts/run_all.sh
+```
+
+The runner uses `PY` for every step, including notebook conversion. Individual
+steps can also be run with `.venv/bin/python scripts/01_eda.py` through
+`scripts/04_analysis.py`, in order. Training reuses completed runs by default;
+use `.venv/bin/python scripts/03_train_models.py --force` to retrain them.
+
+Run the data-reader regression checks without training or downloading data:
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+The IDX reader checks file headers, 28×28 image dimensions and payload lengths.
+A `ValueError` identifying a raw file means its decompressed contents do not
+match the expected IDX format; restore that file from the official dataset.
+
+Build the report separately with `cd report && tectonic main.tex`, or upload
+`report/` to Overleaf (pdflatex).
 
 ## Protocol (fair comparison)
 1. Official train/test split untouched; 20 % stratified validation drawn **only from train**.
