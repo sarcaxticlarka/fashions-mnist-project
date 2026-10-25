@@ -1,5 +1,6 @@
 """Interactive Phase-1 presentation: Fashion-MNIST handcrafted features vs. classical ML.
 
+Frontend & UI/UX Engineering by Sibtain Ahmed Qureshi.
 Run:  streamlit run app/streamlit_app.py
 """
 import json
