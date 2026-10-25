@@ -16,6 +16,17 @@ Logistic Regression, kNN, Random Forest and RBF-SVM on Fashion-MNIST. (Phase 2 =
 * HOG gains are significant (McNemar p < 0.001) for LogReg (+4.0), kNN (+2.1), SVM (+1.4); not for Random Forest (+0.2, p = 0.49).
 * 58–65 % of all errors of every model are inside {T-shirt, Pullover, Coat, Shirt}; Shirt recall is 0.75 at best.
 
+## Frontend & Interactive UI/UX Architecture (Sibtain Ahmed Qureshi)
+The project includes a comprehensive, interactive Streamlit diagnostic and presentation studio (`app/streamlit_app.py`):
+- **Design System & Typography**: Custom CSS theme with Google Fonts (`Outfit` & `Inter`), glassmorphic KPI cards, responsive layout, and dark/light mode tokens.
+- **Interactive Multi-View Feature Studio (Live Demo)**: Real-time 4-viewport synchronized inspection:
+  - Raw $28\times28$ Grayscale image and intensity statistics.
+  - Sobel edge gradient magnitude map.
+  - Live computed HOG orientation vector field.
+- **Edge-Case Preset Gallery**: Quick-select buttons for famous ambiguous test images (e.g. *Shirt #14*, *Coat vs. Pullover #42*, *Sandal #7*, *Sneaker #23*).
+- **Head-to-Head Model Comparator**: Real-time evaluation of any two models side-by-side: calculates accuracy delta, macro-F1 gain, parameter counts, and inference latency speedup ratios.
+- **Interactive Confusion Pair Inspector**: Diagnostic visual tool allowing evaluators to select specific misclassification pairs (e.g. *Shirt $\to$ T-shirt*) to view the exact error instances.
+
 ## Folder structure
 
 ```
@@ -35,7 +46,7 @@ fashion-mnist-phase1/
 ├── scripts/                  01_eda.py · 02_feature_engineering.py · 03_train_models.py · 04_analysis.py · run_all.sh
 ├── notebooks/                01_eda · 02_feature_engineering · 03_models_and_error_analysis (executed)
 ├── results/figures|tables|models   every figure (PNG), table (CSV/JSON), saved models
-├── app/streamlit_app.py      interactive presentation (7 pages + live demo)
+├── app/streamlit_app.py      interactive presentation studio & live demo (Frontend by Sibtain)
 ├── report/main.tex, main.pdf IEEE-format report (+ figures/)
 └── docs/                     presentation script, viva Q&A, glossary
 ```
