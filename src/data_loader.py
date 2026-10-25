@@ -6,6 +6,7 @@ Protocol (fair comparison):
   * the test set is used exactly once, for the final report.
 """
 import gzip
+import struct
 from dataclasses import dataclass
 
 import numpy as np
@@ -18,12 +19,28 @@ def _read_images(path):
     with gzip.open(path, "rb") as f:
         buf = f.read()
     # IDX3 header: magic(4) n(4) rows(4) cols(4) -> 16 bytes. Row-major, upright images.
-    return np.frombuffer(buf, dtype=np.uint8, offset=16).reshape(-1, IMG_SIZE, IMG_SIZE)
+    if len(buf) < 16:
+        raise ValueError(f"{path}: incomplete IDX image header")
+    magic, count, rows, cols = struct.unpack(">IIII", buf[:16])
+    if magic != 2051:
+        raise ValueError(f"{path}: expected IDX image magic 2051, got {magic}")
+    if (rows, cols) != (IMG_SIZE, IMG_SIZE):
+        raise ValueError(f"{path}: expected {IMG_SIZE}x{IMG_SIZE} images, got {rows}x{cols}")
+    if len(buf) != 16 + count * rows * cols:
+        raise ValueError(f"{path}: image payload size does not match header count {count}")
+    return np.frombuffer(buf, dtype=np.uint8, offset=16).reshape(count, rows, cols)
 
 
 def _read_labels(path):
     with gzip.open(path, "rb") as f:
         buf = f.read()
+    if len(buf) < 8:
+        raise ValueError(f"{path}: incomplete IDX label header")
+    magic, count = struct.unpack(">II", buf[:8])
+    if magic != 2049:
+        raise ValueError(f"{path}: expected IDX label magic 2049, got {magic}")
+    if len(buf) != 8 + count:
+        raise ValueError(f"{path}: label payload size does not match header count {count}")
     return np.frombuffer(buf, dtype=np.uint8, offset=8)
 
 
