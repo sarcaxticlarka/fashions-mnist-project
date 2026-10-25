@@ -7,3 +7,7 @@ results/*_log*.txt
 report/*.aux
 report/*.log
 .DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
