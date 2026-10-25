@@ -36,14 +36,13 @@
 
 ---
 
-## Frontend, UI/UX & Interactive Studio Viva Questions (Sibtain Ahmed Qureshi)
+## Data Pipeline, Leakage Prevention & Split Verification Viva Questions
 
 **What was your specific contribution to this project?**  
-I led the **Frontend Engineering, UI/UX Architecture, and Interactive Diagnostic Studio** for the project:
-1. **Design System & Visual Analytics**: Overhauled the frontend with a modern CSS design system, responsive glassmorphic cards, Google Fonts (`Inter` & `Outfit`), and color-coded model status badges.
-2. **Interactive Live Prediction Studio**: Enhanced the Live Demo into an edge-case diagnostic studio featuring quick-select presets for famous failure modes (e.g., *Shirt #14*, *Coat vs. Pullover #42*), synchronized 4-view feature extraction (Raw Grayscale, Sobel edge magnitude, HOG gradient field, and contrast stats), and real-time prediction cards.
-3. **Head-to-Head Model Comparator**: Designed a real-time comparison widget on the Models page that calculates accuracy deltas, macro-F1 differences, parameter ratios, and latency speedup factors between any two selected models.
-4. **Interactive Confusion Pair Inspector**: Built an error exploration interface that filters specific misclassification pairs (e.g., Shirt $\to$ T-shirt) and displays the actual images to diagnose visually why the model failed.
+I led the **Data Pipeline Integrity, Split Verification, and Leakage Prevention** engineering (`src/data_loader.py` `check_splits()` and `scripts/00_check_splits.py`):
+1. **Strict Stratification Verification**: Guaranteed that the 10-class proportions in train and validation partitions match to a margin of $< 0.002$ using `np.bincount`, preventing class distribution shift between tuning and evaluation sets.
+2. **Byte-Level Data Leakage Prevention**: Built automated hashing verification using `hash(im.tobytes())` across all $70,000$ images, programmatically asserting that train, validation, and test sets are strictly disjoint ($0$ duplicate or leaked samples).
+3. **Range & Dimensionality Assertions**: Implemented automated checks asserting all pixel values fall strictly in $[0, 1]$, and verified that the test partition strictly retains the official $10,000$ Zalando benchmark images used only once for final evaluation.
 
 **How does Streamlit handle caching, and how did you optimize frontend performance?**  
 We utilized Streamlit's two primary caching primitives:

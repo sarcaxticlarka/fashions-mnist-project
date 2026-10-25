@@ -16,7 +16,7 @@ Logistic Regression, kNN, Random Forest and RBF-SVM on Fashion-MNIST. (Phase 2 =
 * HOG gains are significant (McNemar p < 0.001) for LogReg (+4.0), kNN (+2.1), SVM (+1.4); not for Random Forest (+0.2, p = 0.49).
 * 58–65 % of all errors of every model are inside {T-shirt, Pullover, Coat, Shirt}; Shirt recall is 0.75 at best.
 
-## Frontend & Interactive UI/UX Architecture (Sibtain Ahmed Qureshi)
+## Presentation Studio & Diagnostic Tools
 The project includes a comprehensive, interactive Streamlit diagnostic and presentation studio (`app/streamlit_app.py`):
 - **Design System & Typography**: Custom CSS theme with Google Fonts (`Outfit` & `Inter`), glassmorphic KPI cards, responsive layout, and dark/light mode tokens.
 - **Interactive Multi-View Feature Studio (Live Demo)**: Real-time 4-viewport synchronized inspection:
@@ -47,10 +47,10 @@ fashion-mnist-phase1/
 │   ├── experiment.py         tune on val -> refit train+val -> single test evaluation
 │   ├── analysis.py           confusion, McNemar, bootstrap CI, error analysis, plots
 │   └── plotting.py
-├── scripts/                  01_eda.py · 02_feature_engineering.py · 03_train_models.py · 04_analysis.py · run_all.sh
+├── scripts/                  00_check_splits.py · 01_eda.py · 02_feature_engineering.py · 03_train_models.py · 04_analysis.py · run_all.sh
 ├── notebooks/                01_eda · 02_feature_engineering · 03_models_and_error_analysis (executed)
 ├── results/figures|tables|models   every figure (PNG), table (CSV/JSON), saved models
-├── app/streamlit_app.py      interactive presentation studio & live demo (Frontend by Sibtain)
+├── app/streamlit_app.py      interactive presentation studio & live demo
 ├── report/main.tex, main.pdf IEEE-format report (+ figures/)
 └── docs/                     presentation script, viva Q&A, glossary
 ```

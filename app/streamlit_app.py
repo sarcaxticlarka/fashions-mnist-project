@@ -436,7 +436,7 @@ elif page == PAGES[3]:
         use_container_width=True
     )
 
-    # ------------------------------------------------------------------------- Frontend Enhancement: Head-to-Head Model Comparator
+    # ------------------------------------------------------------------------- Head-to-Head Model Comparator
     st.markdown("---")
     st.markdown("### ⚡ Interactive Head-to-Head Model Comparator")
     st.caption("Select any two models to inspect differences in accuracy, macro-F1, inference latency, and memory.")
@@ -509,7 +509,7 @@ elif page == PAGES[4]:
     st.markdown("#### Where did Model B fix (or break) Model A?")
     fig_("res_04_confusion_difference")
 
-    # ------------------------------------------------------------------------- Frontend Enhancement: Interactive Confusion Pair Inspector
+    # ------------------------------------------------------------------------- Interactive Confusion Pair Inspector
     st.markdown("---")
     st.markdown("### 🔍 Interactive Confusion Pair Inspector")
     st.caption("Inspect specific misclassified image pairs directly.")
