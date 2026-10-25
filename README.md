@@ -57,6 +57,8 @@ fashion-mnist-phase1/
 
 ## How to run
 
+Requires Python 3.12. Commands assume you are in the repository root.
+
 ```bash
 uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python -r requirements.txt
 bash scripts/run_all.sh                       # everything (~25 min); or run steps individually
