@@ -11,3 +11,5 @@ report/*.log
 # Editor / IDE
 .vscode/
 .idea/
+*.pyc
+.env

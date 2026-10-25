@@ -24,7 +24,7 @@ NUM_CLASSES = len(CLASS_NAMES)
 # The four upper-body garments that are expected to be confused with each other.
 UPPER_BODY = ["T-shirt/top", "Pullover", "Coat", "Shirt"]
 
-IMG_SIZE = 28
+IMG_SIZE = 28  # Fashion-MNIST images are 28x28 grayscale
 
 # Final HOG configuration (chosen by the ablation in 02_feature_engineering).
 HOG_PARAMS = dict(orientations=6, pixels_per_cell=(4, 4), cells_per_block=(2, 2))
