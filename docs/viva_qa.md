@@ -33,3 +33,22 @@
 **What changes in Phase 2?** CNN (2–3 conv blocks, pooling, dropout, early stopping) on the same splits, same metrics + parameter count + latency.
 
 **Is there data leakage?** No: scalers/PCA fitted on training data; no duplicates between train and test (checked by hashing).
+
+---
+
+## Frontend, UI/UX & Interactive Studio Viva Questions (Sibtain Ahmed Qureshi)
+
+**What was your specific contribution to this project?**  
+I led the **Frontend Engineering, UI/UX Architecture, and Interactive Diagnostic Studio** for the project:
+1. **Design System & Visual Analytics**: Overhauled the frontend with a modern CSS design system, responsive glassmorphic cards, Google Fonts (`Inter` & `Outfit`), and color-coded model status badges.
+2. **Interactive Live Prediction Studio**: Enhanced the Live Demo into an edge-case diagnostic studio featuring quick-select presets for famous failure modes (e.g., *Shirt #14*, *Coat vs. Pullover #42*), synchronized 4-view feature extraction (Raw Grayscale, Sobel edge magnitude, HOG gradient field, and contrast stats), and real-time prediction cards.
+3. **Head-to-Head Model Comparator**: Designed a real-time comparison widget on the Models page that calculates accuracy deltas, macro-F1 differences, parameter ratios, and latency speedup factors between any two selected models.
+4. **Interactive Confusion Pair Inspector**: Built an error exploration interface that filters specific misclassification pairs (e.g., Shirt $\to$ T-shirt) and displays the actual images to diagnose visually why the model failed.
+
+**How does Streamlit handle caching, and how did you optimize frontend performance?**  
+We utilized Streamlit's two primary caching primitives:
+- `@st.cache_data`: Applied to immutable tabular and matrix datasets (`get_splits()`, `get_results()`). It caches serializable data structures in memory, ensuring that re-rendering sliders or dropdowns takes $<5$ ms without re-reading the 70,000 IDX files.
+- `@st.cache_resource`: Applied to heavy model objects (`_load_model()`). Trained estimators (such as the 48 MB SVM-RBF model) are deserialized via `joblib` once and held in memory across user sessions, preventing costly disk I/O on every interaction.
+
+**How is inference latency measured in the live interface?**  
+When an image is passed to `model.predict()`, we extract the feature representation (either 784-d raw pixels or 864-d HOG via `compute_hog(img[None], n_jobs=1)`), benchmark execution time with high-resolution monotonic clocks (`time.perf_counter()`), and report both feature extraction time and model inference time. This allows the evaluator to see why Logistic Regression runs in ~0.05 ms while SVM-RBF takes ~5 ms per image.
