@@ -7,6 +7,8 @@ PY=${PY:-.venv/bin/python}
 "$PY" scripts/02_feature_engineering.py
 "$PY" scripts/03_train_models.py       # resumable; add --force to retrain
 "$PY" scripts/04_analysis.py
+"$PY" scripts/05_train_cnn.py          # Phase 2 CNN models; add --force to retrain
+"$PY" scripts/06_cnn_analysis.py       # Phase 2 post-hoc analysis & comparison
 "$PY" scripts/build_notebooks.py
 "$PY" -m nbconvert --to notebook --execute --inplace notebooks/*.ipynb
 echo "Done. Presentation: streamlit run app/streamlit_app.py"

@@ -12,7 +12,7 @@
 
 \begin{document}
 
-\title{Automatic Clothing Category Recognition:\\ Handcrafted Features versus Raw Pixels with Classical Machine Learning\\ (Phase 1 --- Machine-Learning Evaluation)}
+\title{Automatic Clothing Category Recognition:\\ Handcrafted Features versus Raw Pixels with Classical Machine Learning and Deep Convolutional Networks\\ (Phase 1 \& Phase 2 Evaluation)}
 
 \author{\IEEEauthorblockN{MD. Sajjan, Sibtain Ahmed Qureshi, Syed Darain Qamar, Antik Mandal, Abuzar Haideri}
 \IEEEauthorblockA{Department of CS/AI\\
@@ -22,7 +22,7 @@ Course: Advanced Machine Learning}}
 \maketitle
 
 \begin{abstract}
-We study automatic tagging of clothing images for a small catalogue using the Fashion-MNIST benchmark (70{,}000 grayscale $28\times28$ images, 10 classes). Phase~1 asks whether a fixed image descriptor, the Histogram of Oriented Gradients (HOG), improves classical classifiers over flattened pixels. We compare Logistic Regression, $k$-Nearest Neighbours, Random Forest and an RBF Support Vector Machine on three representations (raw pixels, HOG, HOG plus 16 shape statistics) under a strict protocol: the official train/test split is preserved, a stratified validation set is drawn only from the training data, hyper-parameters are tuned on validation, and the test set is used once. HOG improves three of four classifiers significantly (McNemar $p<0.001$): +4.0 points for Logistic Regression, +2.1 for $k$-NN and +1.4 for SVM, whereas Random Forest is unchanged (+0.2, $p=0.49$). The best model, an RBF SVM on HOG, reaches 91.3\% test accuracy and 0.913 macro-F1. About 60--65\% of all errors of every model stay inside the group \{T-shirt, Pullover, Coat, Shirt\}, and Shirt recall is only 0.75, which motivates the CNN studied in Phase~2.
+We study automatic tagging of clothing images for a small catalogue using the Fashion-MNIST benchmark (70{,}000 grayscale $28\times28$ images, 10 classes). In Phase~1, we asked whether a fixed spatial descriptor, the Histogram of Oriented Gradients (HOG), improves classical classifiers over flattened pixels (Logistic Regression, $k$-NN, Random Forest, SVM-RBF). HOG improved three of four learners significantly ($p<0.001$), reaching 91.3\% test accuracy with an RBF SVM, yet 60--65\% of remaining errors were confined to the ambiguous upper-body cluster \{T-shirt, Pullover, Coat, Shirt\} where Shirt recall was limited to 0.75. In Phase~2, we transition from handcrafted representations to end-to-end learned hierarchical spatial filters using Convolutional Neural Networks (CNNs) on the identical splits (48k train, 12k val, 10k test). A 3-block CNN with Global Average Pooling (CNN3Block-GAP) achieves 93.09\% test accuracy (0.9306 macro-F1), significantly outperforming the best classical SVM (McNemar $\chi^2 = 44.56, p = 2.46 \times 10^{-11}$). The CNN reduces total test errors from 870 to 691, boosts Pullover recall from 0.856 to 0.906 and Coat recall from 0.875 to 0.924, while requiring only 304{,}682 parameters (a $60\times$ reduction compared to SVM-RBF) and 0.68~ms inference latency. Grad-CAM visualisations confirm that convolutional feature maps successfully capture collar contours and garment silhouettes that fixed gradient bins cannot resolve.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -238,37 +238,113 @@ The share of all errors that fall inside the upper-body group (T-shirt, Pullover
 \begin{figure}[t]\centering\includegraphics[width=\columnwidth]{res_06b_misclassified_best_hog.png}\caption{Misclassified upper-body garments (SVM, HOG).}\label{fig:mis}\end{figure}
 
 %=====================================================================
-\section{Discussion, Limitations and Phase~2}
-\textbf{Answer to the research question.} A fixed HOG descriptor is a cheap (0.14 ms) and statistically significant improvement for linear, instance-based and kernel learners, and the best classical model is a kernel SVM on HOG (91.3\%). It does not help a Random Forest. Flattened pixels are not always worse; they are worse when the learner cannot build neighbourhood interactions itself.
+\section{Phase~2: Deep Learning Evaluation (CNNs)}\label{sec:phase2}
+While Phase~1 demonstrated that handcrafted spatial descriptors (HOG) significantly improve linear, instance-based, and kernel learners, performance plateaued at 91.3\% with an acute bottleneck: 60--65\% of all errors remained trapped inside the ambiguous upper-body garment cluster \{T-shirt, Pullover, Coat, Shirt\}. In Phase~2, we replace fixed gradient histograms with end-to-end learned hierarchical representations trained under the identical experimental protocol (48{,}000 train, 12{,}000 validation, 10{,}000 test; random seed 42).
 
-\textbf{Limitations.} (i) The HOG configuration was selected with a Logistic-Regression probe, not per classifier. (ii) A single validation split is used; test uncertainty is bootstrap-based but there is no repeated cross-validation. (iii) The SVM is tuned on a 15{,}000-image subsample. (iv) Grids are small. (v) The $28\times28$ grayscale resolution discards the texture that separates shirts from T-shirts.
+\subsection{Architectures and Design Decisions}
+We evaluated three convolutional architectures in PyTorch:
+\begin{enumerate}
+\item \textbf{CNN2Block (Baseline):} Two stages of $[\mathrm{Conv}(3\times3, 32/64) \to \mathrm{BatchNorm} \to \mathrm{ReLU} \to \mathrm{MaxPool}(2\times2)]$ followed by $\mathrm{Flatten} \to \mathrm{Linear}(64\times7\times7, 128) \to \mathrm{Dropout}(0.4) \to \mathrm{Linear}(10)$. Total parameters: 421{,}738.
+\item \textbf{CNN2Block+Aug:} The baseline architecture trained with spatial data augmentation (random horizontal flip $p=0.5$ and random crop with 2-px reflection padding).
+\item \textbf{CNN3Block-GAP (Deep + GAP):} Three double-convolution stages (channels 32, 64, 128) with batch normalisation and max-pooling, terminated by Global Average Pooling ($\mathrm{AdaptiveAvgPool2d}((1, 1))$) and a compact classifier ($\mathrm{Linear}(128, 128) \to \mathrm{Dropout}(0.3) \to \mathrm{Linear}(10)$). Eliminating the high-dimensional flattening layer cuts parameters to \textbf{304{,}682} while tripling feature depth.
+\end{enumerate}
 
-\textbf{Phase~2.} A two- or three-block CNN with pooling, dropout and early stopping will be trained on the \emph{same} splits and compared on the same metrics. The CNN can learn its own hierarchical filters and may resolve the upper-body group better than any fixed descriptor.
+All networks were trained using AdamW ($\mathrm{lr}=10^{-3}$, weight decay $10^{-4}$), Cosine Annealing learning rate schedule, and early stopping on validation macro-F1 (patience 5).
+
+\subsection{Results and Comparison with Phase~1}
+Table~\ref{tab:unified} summarises the unified test-set results across both project phases, and Fig.~\ref{fig:pareto_cnn} plots the accuracy--latency Pareto frontier.
+
+\begin{table}[t]\centering\caption{Unified leaderboard: Phase 1 (Classical ML) vs.\ Phase 2 (CNN).}\label{tab:unified}
+\begin{tabular}{@{}llrrrr@{}}\toprule
+Model & Representation & Test Acc & Macro-F1 & Latency & Params\\\midrule
+\textbf{CNN3Block-GAP} & \textbf{Learned CNN} & \textbf{0.9309} & \textbf{0.9306} & \textbf{0.68 ms} & \textbf{304k}\\
+CNN2Block & Learned CNN & 0.9216 & 0.9212 & 0.18 ms & 422k\\
+CNN2Block+Aug & Learned CNN & 0.9141 & 0.9140 & 0.22 ms & 422k\\\midrule
+SVM-RBF & HOG+stats & 0.9137 & 0.9137 & 5.28 ms & 17.5M\\
+SVM-RBF & HOG (Phase 1 best) & 0.9130 & 0.9130 & 5.36 ms & 18.1M\\
+SVM-RBF & Pixels & 0.8988 & 0.8985 & 4.53 ms & 15.0M\\
+LogReg & HOG+stats & 0.8894 & 0.8890 & 0.001 ms & 8.8k\\
+LogReg & HOG & 0.8852 & 0.8848 & 0.001 ms & 8.7k\\
+Random Forest & HOG+stats & 0.8821 & 0.8811 & 0.041 ms & 2.5M\\
+Random Forest & HOG & 0.8781 & 0.8769 & 0.042 ms & 3.2M\\
+kNN & HOG & 0.8774 & 0.8777 & 0.271 ms & 51.8M\\
+Random Forest & Pixels & 0.8760 & 0.8746 & 0.037 ms & 2.5M\\
+kNN & Pixels & 0.8561 & 0.8564 & 0.316 ms & 47.0M\\
+LogReg & Pixels & 0.8456 & 0.8447 & 0.001 ms & 7.9k\\\bottomrule
+\end{tabular}\end{table}
+
+\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{cnn_01_training_curves.png}\caption{Training loss and validation accuracy dynamics across epochs for CNN models.}\label{fig:cnn_train}\end{figure}
+\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{res_11_pareto_with_cnn.png}\caption{Accuracy vs.\ CPU single-image inference latency across classical and deep models.}\label{fig:pareto_cnn}\end{figure}
+
+\subsection{Statistical Significance (McNemar Test)}
+Table~\ref{tab:mc_cnn} provides the paired McNemar significance tests comparing the best classical model (SVM-RBF on HOG) against the Phase~2 CNNs on the 10{,}000 test predictions. \texttt{CNN3Block-GAP} delivers a statistically definitive improvement ($\Delta = +1.79\%$, $\chi^2 = 44.56, p = 2.46 \times 10^{-11}$). The deep network correctly classifies 445 samples that SVM-RBF misclassified, while SVM-RBF was uniquely correct on only 266.
+
+\begin{table}[t]\centering\caption{McNemar test: SVM-RBF (HOG) vs.\ CNNs.}\label{tab:mc_cnn}
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+Comparison & $\Delta$acc & SVM only & CNN only & $\chi^2$ & $p$\\\midrule
+vs.\ CNN2Block & +0.0086 & 313 & 399 & 10.15 & $1.4\times10^{-3}$\\
+vs.\ CNN2Block+Aug & +0.0011 & 352 & 363 & 0.14 & $0.71$\\
+vs.\ \textbf{CNN3Block-GAP} & \textbf{+0.0179} & \textbf{266} & \textbf{445} & \textbf{44.56} & $\mathbf{2.5\times10^{-11}}$\\\bottomrule
+\end{tabular}\end{table}
+
+\subsection{Resolution of the Upper-Body Garment Bottleneck}
+Fig.~\ref{fig:recall_cnn} compares per-class test recall across classical and convolutional models. CNNs achieve substantial gains on the most difficult classes:
+\begin{itemize}
+\item \textbf{Pullover Recall:} 0.830 (SVM pixels) $\to$ 0.856 (SVM HOG) $\to$ \textbf{0.906} (\texttt{CNN3Block-GAP}), a +5.0 point gain over HOG.
+\item \textbf{Coat Recall:} 0.838 (SVM pixels) $\to$ 0.875 (SVM HOG) $\to$ \textbf{0.924} (\texttt{CNN3Block-GAP}), a +4.9 point gain over HOG.
+\item \textbf{Shirt Recall:} 0.705 (SVM pixels) $\to$ 0.750 (SVM HOG) $\to$ \textbf{0.763} (\texttt{CNN3Block-GAP}).
+\item \textbf{Absolute Error Reduction:} Total test errors dropped from 1{,}544 (LogReg pixels) and 870 (SVM HOG) to \textbf{691} (\texttt{CNN3Block-GAP}), eliminating 179 errors over the best Phase~1 configuration.
+\end{itemize}
+
+\begin{figure*}[t]\centering\includegraphics[width=\textwidth]{res_09_per_class_recall_with_cnn.png}\caption{Per-class test recall heatmap across all Phase 1 and Phase 2 models.}\label{fig:recall_cnn}\end{figure*}
+
+\subsection{Explainability via Grad-CAM}
+To understand why the learned convolutional filters outperform handcrafted HOG descriptors, we computed Grad-CAM~\cite{selvaraju2017} saliency heatmaps on the final convolutional layer of \texttt{CNN3Block-GAP} (Fig.~\ref{fig:gradcam}). Fixed HOG grids aggregate edge orientations uniformly across fixed $4\times4$ cells regardless of semantic relevance. In contrast, Grad-CAM reveals that the CNN actively concentrates its receptive field on:
+\begin{enumerate}
+\item \textbf{Collar and necklines:} Distinguishing T-shirt crew necks from open shirt collars and pullover crew necks.
+\item \textbf{Shoulder seam transitions and sleeves:} Distinguishing long-sleeve pullovers and coats from short-sleeve tops.
+\item \textbf{Garment hemlines and outer contours:} Distinguishing open coat splits from closed pullover waists.
+\end{enumerate}
+
+\begin{figure*}[t]\centering\includegraphics[width=0.92\textwidth]{cnn_02_gradcam_gallery.png}\caption{Grad-CAM saliency heatmaps (\texttt{CNN3Block-GAP}) for the ambiguous upper-body garment categories.}\label{fig:gradcam}\end{figure*}
+
+%=====================================================================
+\section{Discussion, Trade-offs and Limitations}
+\textbf{Handcrafted vs.\ Learned Features.} Handcrafted HOG features are computationally lightweight (0.14~ms extraction) and provide immediate non-linear spatial context that elevates weak linear models (+4.0 points). However, fixed gradient orientations cannot adapt to subtle semantic distinctions (such as button plackets and collar creases). End-to-end CNNs eliminate manual feature engineering entirely, surpassing the best classical SVM by +1.79 points ($p < 10^{-10}$).
+
+\textbf{Computational Efficiency.} The best classical model (SVM-RBF) requires storing 18.1 million numbers (support vectors and dual coefficients) and exhibits an inference latency of 5.36~ms per image. In contrast, \texttt{CNN3Block-GAP} requires only 304{,}682 parameters (a $60\times$ reduction in model storage) and achieves 0.68~ms inference latency on CPU (an $8\times$ inference speedup), establishing a superior Pareto frontier.
+
+\textbf{Limitations.} (i) Resolution remains $28\times28$ grayscale; buttons and fine stitches are beneath the Nyquist sampling rate. (ii) Data augmentation with aggressive crops slightly depressed validation convergence on 2-block models because border context is lost.
 
 %=====================================================================
 \section{Conclusion}
-We built a reproducible Phase-1 pipeline for Fashion-MNIST: audit and EDA, three feature sets, four classifiers, strict validation, paired significance tests and error analysis. HOG improves three of four classifiers significantly; the best model reaches 91.3\% accuracy and 0.913 macro-F1; and the Shirt/T-shirt/Pullover/Coat group dominates the remaining errors.
+This two-phase investigation on Fashion-MNIST evaluated classical machine learning with handcrafted HOG features (Phase~1) against end-to-end convolutional neural networks (Phase~2) under a rigorous, leakage-free protocol.
+Our key conclusions are:
+\begin{enumerate}
+\item Fixed HOG descriptors provide substantial gains for learners lacking intrinsic spatial interaction mechanics (Logistic Regression, $k$-NN, SVM), but offer no advantage to tree ensembles (Random Forest, $p=0.49$).
+\item The best classical classifier is an RBF SVM on HOG (91.30\% accuracy), but suffers from high parameter storage (18.1M) and high latency (5.36~ms).
+\item Learnable convolutional representations surpass the classical ceiling: a 3-block CNN with Global Average Pooling reaches \textbf{93.09\% test accuracy} and 0.9306 macro-F1 ($p = 2.46 \times 10^{-11}$), reducing total errors from 870 to 691.
+\item Global Average Pooling simultaneously reduces model size to 305k parameters ($60\times$ smaller than SVM) and accelerates CPU inference to 0.68~ms ($8\times$ faster).
+\item Grad-CAM interpretability confirms that CNNs learn localized collar and hemline features that fixed cell histograms cannot capture.
+\end{enumerate}
 
 \section*{Reproducibility and Code}
-All code, notebooks, the Streamlit presentation and raw result tables are in the project repository (\texttt{README.md}). Seeds are fixed (42); \texttt{scripts/run\_all.sh} regenerates every figure and table.
+All code, models, notebooks, the interactive Streamlit demo, and raw result tables are publicly hosted in the project repository (\texttt{README.md}). The complete pipeline can be regenerated via \texttt{scripts/run\_all.sh}.
 
 \appendices
 \section{Software Components}
-\begin{table}[h]\centering\caption{Main functions used.}
+\begin{table}[h]\centering\caption{Software packages used.}
 \begin{tabular}{@{}p{0.34\columnwidth}p{0.58\columnwidth}@{}}\toprule
-Function / class & Purpose\\\midrule
-\texttt{gzip}, \texttt{np.frombuffer} & read IDX files\\
-\texttt{train\_test\_split} (stratify) & validation split from train\\
-\texttt{skimage.feature.hog} & HOG descriptor\\
-\texttt{scipy.ndimage.sobel} & edge density\\
-\texttt{PCA}, \texttt{TSNE} & dimensionality reduction/visualisation\\
-\texttt{f\_classif} & pixel F-score\\
-\texttt{StandardScaler}, \texttt{Pipeline} & scaling inside the model\\
-\texttt{LogisticRegression}, \texttt{KNeighborsClassifier}, \texttt{RandomForestClassifier}, \texttt{SVC} & the four learners\\
-\texttt{accuracy\_score}, \texttt{f1\_score}, \texttt{recall\_score}, \texttt{confusion\_matrix} & metrics\\
-\texttt{scipy.stats.ks\_2samp}, \texttt{chi2} & KS test, McNemar test\\
-\texttt{joblib} & parallel feature extraction, model saving\\
-\texttt{matplotlib}, \texttt{seaborn}, \texttt{plotly}, \texttt{streamlit} & figures and presentation app\\\bottomrule
+Function / package & Purpose\\\midrule
+\texttt{gzip}, \texttt{np.frombuffer} & IDX file parsing and validation\\
+\texttt{train\_test\_split} & Stratified train/validation partitioning\\
+\texttt{skimage.feature.hog} & Fixed HOG feature extraction\\
+\texttt{scikit-learn} & Logistic Regression, $k$-NN, Random Forest, SVM-RBF\\
+\texttt{torch}, \texttt{torchvision} & CNN architectures, data loaders, training loops\\
+\texttt{torchinfo} & Neural network parameter auditing\\
+\texttt{scipy.stats} & Kolmogorov-Smirnov test, McNemar $\chi^2$ test\\
+\texttt{matplotlib}, \texttt{seaborn}, \texttt{plotly} & Publication figures and heatmaps\\
+\texttt{streamlit} & Interactive 8-page presentation studio\\\bottomrule
 \end{tabular}\end{table}
 
 \begin{thebibliography}{99}
@@ -288,5 +364,6 @@ Function / class & Purpose\\\midrule
 \bibitem{efron1979} B.~Efron, ``Bootstrap methods: another look at the jackknife,'' \emph{Ann. Statist.}, vol.~7, no.~1, pp.~1--26, 1979.
 \bibitem{pedregosa2011} F.~Pedregosa \emph{et al.}, ``Scikit-learn: machine learning in Python,'' \emph{J. Mach. Learn. Res.}, vol.~12, pp.~2825--2830, 2011.
 \bibitem{vanderwalt2014} S.~van~der Walt \emph{et al.}, ``scikit-image: image processing in Python,'' \emph{PeerJ}, vol.~2, e453, 2014.
+\bibitem{selvaraju2017} R.~R. Selvaraju \emph{et al.}, ``Grad-CAM: Visual explanations from deep networks via gradient-based localization,'' in \emph{Proc. IEEE ICCV}, 2017, pp.~618--626.
 \end{thebibliography}
 \end{document}

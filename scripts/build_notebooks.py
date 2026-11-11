@@ -97,4 +97,23 @@ write("03_models_and_error_analysis.ipynb", [
     md("## 8. Largest confusions per model"),
     code("pd.read_csv(TABLE_DIR/'top_confusions_all.csv').query('features==\"hog\"').head(12)"),
 ])
+# ---------------------------------------------------------------- 04 CNN (Phase 2)
+write("04_deep_learning_cnn.ipynb", [
+    md("# 04 · Phase 2: Convolutional Neural Networks (Deep Learning)\nWe transition from handcrafted features (HOG) to end-to-end learned hierarchical spatial filters using PyTorch CNNs on the **exact same Fashion-MNIST splits**."),
+    code(SETUP + "\nimport torch\nfrom src.cnn_models import *\ndf_all = pd.read_csv(TABLE_DIR/'all_phases_model_results.csv')"),
+    md("## 1. Unified Leaderboard (Classical vs CNNs)"),
+    code("df_all[['phase','model','features','accuracy','macro_f1','fit_seconds','infer_ms','params']]"),
+    md("## 2. CNN Training & Validation Dynamics"),
+    code("show('cnn_01_training_curves', 1000)"),
+    md("## 3. Did CNN Break the Upper-Body Garment Bottleneck?"),
+    code("show('res_10_upper_body_error_share_with_cnn', 850); pd.read_csv(TABLE_DIR/'upper_body_error_share_with_cnn.csv')"),
+    md("## 4. Per-Class Recall: Comparing All Models"),
+    code("show('res_09_per_class_recall_with_cnn', 1000); pd.read_csv(TABLE_DIR/'per_class_recall_phase2.csv')"),
+    md("## 5. Statistical Significance (McNemar: SVM vs CNN)"),
+    code("pd.read_csv(TABLE_DIR/'mcnemar_phase1_vs_phase2.csv')"),
+    md("## 6. Interpretability: Grad-CAM Saliency Maps"),
+    code("show('cnn_02_gradcam_gallery', 900)"),
+    md("## 7. Cost-Accuracy Frontier (Pareto Analysis)"),
+    code("show('res_11_pareto_with_cnn', 750)"),
+])
 print("notebooks written")

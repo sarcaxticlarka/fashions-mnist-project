@@ -1,0 +1,4 @@
+model,features,val_acc,accuracy,macro_f1,fit_seconds,infer_ms_per_image,params
+CNN2Block,pixels (learned CNN),0.93325,0.9216,0.9211942427956915,220.7,0.1823,421738
+CNN2Block_Aug,pixels (learned CNN),0.9236666666666666,0.9141,0.9139839559244642,286.4,0.221,421738
+CNN3Block_GAP,pixels (learned CNN),0.94325,0.9309,0.9305998782501618,1082.9,0.6777,304682

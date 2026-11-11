@@ -1,0 +1,16 @@
+model_display,phase,errors,upper_body_errors,share_pct,accuracy
+LogReg (pixels),Phase 1 (Classical),1544,914,59.2,0.8456
+kNN (pixels),Phase 1 (Classical),1439,892,62.0,0.8561
+RandomForest (pixels),Phase 1 (Classical),1240,800,64.5,0.876
+kNN (hog),Phase 1 (Classical),1226,780,63.6,0.8774
+kNN (hog_stats),Phase 1 (Classical),1224,781,63.8,0.8776
+RandomForest (hog),Phase 1 (Classical),1219,706,57.9,0.8781
+RandomForest (hog_stats),Phase 1 (Classical),1179,700,59.4,0.8821
+LogReg (hog),Phase 1 (Classical),1148,712,62.0,0.8852
+LogReg (hog_stats),Phase 1 (Classical),1106,688,62.2,0.8894
+SVM-RBF (pixels),Phase 1 (Classical),1012,656,64.8,0.8988
+SVM-RBF (hog),Phase 1 (Classical),870,552,63.4,0.913
+SVM-RBF (hog_stats),Phase 1 (Classical),863,547,63.4,0.9137
+CNN2Block_Aug (pixels),Phase 2 (CNN),859,578,67.3,0.9141
+CNN2Block (pixels),Phase 2 (CNN),784,515,65.7,0.9216
+CNN3Block_GAP (pixels),Phase 2 (CNN),691,460,66.6,0.9309

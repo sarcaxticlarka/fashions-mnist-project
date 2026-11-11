@@ -1,0 +1,26 @@
+{
+  "model": "CNN2Block",
+  "features": "pixels (learned CNN)",
+  "dim": 784,
+  "val_acc": 0.93325,
+  "val_macro_f1": 0.9329843443806899,
+  "accuracy": 0.9216,
+  "macro_f1": 0.9211942427956915,
+  "macro_precision": 0.9211758972707373,
+  "fit_seconds": 220.7,
+  "infer_ms_per_image": 0.1823,
+  "params": 421738,
+  "params_note": "weights + biases (learnable)",
+  "per_class_recall": {
+    "T-shirt/top": 0.884,
+    "Trouser": 0.989,
+    "Pullover": 0.877,
+    "Dress": 0.918,
+    "Coat": 0.898,
+    "Sandal": 0.977,
+    "Shirt": 0.742,
+    "Sneaker": 0.971,
+    "Bag": 0.986,
+    "Ankle boot": 0.974
+  }
+}

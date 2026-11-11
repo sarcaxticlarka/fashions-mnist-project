@@ -30,7 +30,37 @@
 
 **Limitations?** HOG parameters chosen by an LR probe; one split; SVM tuned on a 15k subsample; 28×28 grayscale.
 
-**What changes in Phase 2?** CNN (2–3 conv blocks, pooling, dropout, early stopping) on the same splits, same metrics + parameter count + latency.
+---
+
+## Phase 2 (Deep Learning / CNN) Viva Questions
+
+**Why did you implement CNNs for Phase 2 instead of sticking with classical ML?**  
+In Phase 1, the best classical model (SVM-RBF on HOG) reached an accuracy ceiling of 91.3%, with 60–65% of all errors trapped inside the ambiguous upper-body garment cluster (`{T-shirt, Pullover, Coat, Shirt}`). At $28\times28$ resolution, discriminating features (collars, plackets, buttons) are 1–2 pixels wide. Handcrafted HOG descriptors bin edge gradients rigidly into predefined $4\times4$ cells, whereas CNNs learn hierarchical spatial filters end-to-end that adapt specifically to subtle neckline and hemline contours.
+
+**What CNN architectures did you design and compare?**  
+We implemented two primary architectures:
+1. **CNN2Block (Baseline)**: A 2-stage convolutional network ($32 \to 64$ filters, $3\times3$ kernels, BatchNorm, ReLU, MaxPool $2\times2$) followed by `Flatten`, `Linear(3136, 128)`, `Dropout(0.4)`, and `Linear(128, 10)`. Achieves 92.16% test accuracy with 421.7k parameters.
+2. **CNN3Block-GAP (Modernized Deep ConvNet)**: A 3-stage double-conv network ($32 \to 64 \to 128$ filters) with **Global Average Pooling (GAP)** (`AdaptiveAvgPool2d((1, 1))`) replacing the high-dimensional flattening layer. Achieves **93.09% test accuracy** with only **304.7k parameters**.
+
+**Why use Global Average Pooling (GAP) instead of Flatten + Dense?**  
+A traditional flattening layer after a $128\times7\times7$ feature map creates $128 \times 49 = 6,272$ inputs to a dense layer, adding over 800,000 parameters that are prone to severe overfitting. GAP reduces each feature map channel to a single scalar average ($128\times1\times1$), acting as a strong structural regularizer, enforcing translation invariance, and reducing parameter count from ~1.2M down to only 304k.
+
+**Is the CNN improvement over SVM-RBF statistically significant?**  
+Yes. We evaluated paired test predictions using the continuity-corrected McNemar $\chi^2$ test on the 10,000 test images. `CNN3Block-GAP` vs. `SVM-RBF (HOG)` yields $\chi^2 = 44.56$ and $p = 2.46 \times 10^{-11} \ll 0.001$. The CNN was uniquely correct on 445 samples where the SVM failed, whereas the SVM was uniquely correct on only 266 samples.
+
+**Did the CNN resolve the upper-body garment bottleneck?**  
+Significantly:
+- **Pullover recall** increased from 85.6% (SVM) $\to$ **90.6%** (CNN) (+5.0 points).
+- **Coat recall** increased from 87.5% (SVM) $\to$ **92.4%** (CNN) (+4.9 points).
+- **Shirt recall** improved from 75.0% (SVM) $\to$ **76.3%** (CNN).
+- **Total test errors** fell from 870 down to **691** (179 fewer errors).
+
+**How does inference latency and storage compare between CNN and SVM?**  
+- **Storage/Parameters**: SVM-RBF stores **18.1 million numbers** (support vectors and dual coefficients). `CNN3Block-GAP` has only **304,682 weights and biases** (a $\approx 60\times$ reduction in model footprint).
+- **Latency**: Single-sample CPU inference takes **0.68 ms** for `CNN3Block-GAP` versus **5.36 ms** for SVM-RBF (an $\approx 8\times$ speedup).
+
+**What is Grad-CAM and how did you use it?**  
+Grad-CAM (Gradient-weighted Class Activation Mapping) calculates the gradient of the predicted class score with respect to feature activation maps of the final convolutional layer: $\alpha_k^c = \frac{1}{Z}\sum_i \sum_j \frac{\partial y^c}{\partial A_{i,j}^k}$. We take a rectified linear combination $L^c = \text{ReLU}(\sum_k \alpha_k^c A^k)$ to produce a $28\times28$ heatmap. Visualizing Grad-CAM on ambiguous shirts and pullovers proves that the CNN concentrates attention on the collar opening, sleeve transitions, and hemlines.
 
 **Is there data leakage?** No: scalers/PCA fitted on training data; no duplicates between train and test (checked by hashing).
 

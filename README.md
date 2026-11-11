@@ -1,20 +1,40 @@
-# Automatic Clothing Category Recognition — Phase 1 (Machine Learning)
+# Automatic Clothing Category Recognition — Phase 1 & Phase 2
 
-**Project 11 · Inventory image tagging via handcrafted features and a small CNN.**
-This repository is the **Phase 1 (classical ML)** deliverable: raw pixels vs. HOG descriptors with
-Logistic Regression, kNN, Random Forest and RBF-SVM on Fashion-MNIST. (Phase 2 = CNN, not included.)
+**Project 11 · Inventory image tagging via handcrafted features and Convolutional Neural Networks.**
+This repository contains the complete deliverables for:
+- **Phase 1 (Classical Machine Learning):** Raw pixels vs. HOG descriptors evaluated across Logistic Regression, $k$-NN, Random Forest, and RBF Support Vector Machines.
+- **Phase 2 (Deep Learning):** End-to-end learned hierarchical spatial representations evaluated across baseline 2-block ConvNets, spatial data augmentation, and deep 3-block ConvNets with Global Average Pooling (GAP) and Grad-CAM interpretability.
 
-## Headline results (test set, 10,000 images)
+## Headline Results (Test set, 10,000 images)
 
-| Model | Pixels | HOG | HOG + stats |
-|---|---|---|---|
-| Logistic Regression | 84.56 | 88.52 | 88.94 |
-| kNN | 85.61 | 87.74 | 87.76 |
-| Random Forest | 87.60 | 87.81 | 88.21 |
-| **SVM (RBF)** | 89.88 | **91.30** | **91.37** |
+### Unified Leaderboard (Phase 1 vs. Phase 2)
 
-* HOG gains are significant (McNemar p < 0.001) for LogReg (+4.0), kNN (+2.1), SVM (+1.4); not for Random Forest (+0.2, p = 0.49).
-* 58–65 % of all errors of every model are inside {T-shirt, Pullover, Coat, Shirt}; Shirt recall is 0.75 at best.
+| Phase | Model | Representation | Test Acc | Macro-F1 | CPU Latency | Parameters |
+|---|---|---|---|---|---|---|
+| **Phase 2 (Deep Learning)** | **CNN3Block-GAP** | **Learned CNN filters** | **93.09%** | **0.9306** | **0.68 ms** | **304.7k** |
+| Phase 2 (Deep Learning) | CNN2Block | Learned CNN filters | 92.16% | 0.9212 | 0.18 ms | 421.7k |
+| Phase 2 (Deep Learning) | CNN2Block + Aug | Learned CNN filters | 91.41% | 0.9140 | 0.22 ms | 421.7k |
+| Phase 1 (Classical ML) | SVM-RBF | HOG + 16 shape stats | 91.37% | 0.9137 | 5.28 ms | 17.5M |
+| Phase 1 (Classical ML) | **SVM-RBF** | **HOG (Phase 1 Best)** | **91.30%** | **0.9130** | **5.36 ms** | **18.1M** |
+| Phase 1 (Classical ML) | SVM-RBF | Raw Pixels | 89.88% | 0.8985 | 4.53 ms | 15.0M |
+| Phase 1 (Classical ML) | Logistic Regression | HOG + stats | 88.94% | 0.8890 | 0.001 ms | 8.8k |
+| Phase 1 (Classical ML) | Logistic Regression | HOG | 88.52% | 0.8848 | 0.001 ms | 8.7k |
+| Phase 1 (Classical ML) | Random Forest | HOG + stats | 88.21% | 0.8811 | 0.041 ms | 2.5M |
+| Phase 1 (Classical ML) | Random Forest | HOG | 87.81% | 0.8769 | 0.042 ms | 3.2M |
+| Phase 1 (Classical ML) | $k$-NN | HOG | 87.74% | 0.8777 | 0.271 ms | 51.8M |
+| Phase 1 (Classical ML) | Random Forest | Raw Pixels | 87.60% | 0.8746 | 0.037 ms | 2.5M |
+| Phase 1 (Classical ML) | $k$-NN | Raw Pixels | 85.61% | 0.8564 | 0.316 ms | 47.0M |
+| Phase 1 (Classical ML) | Logistic Regression | Raw Pixels | 84.56% | 0.8447 | 0.001 ms | 7.9k |
+
+### Key Scientific Findings
+1. **Statistical Superiority (McNemar Test)**: `CNN3Block-GAP` significantly outperforms the best classical model (SVM-RBF on HOG): $\Delta \text{acc} = +1.79\%$, $\chi^2 = 44.56, p = 2.46 \times 10^{-11} \ll 0.001$.
+2. **Upper-Body Garment Bottleneck Resolution**:
+   - **Pullover Recall**: Increased from 85.6% (SVM HOG) $\to$ **90.6%** (CNN3Block-GAP).
+   - **Coat Recall**: Increased from 87.5% (SVM HOG) $\to$ **92.4%** (CNN3Block-GAP).
+   - **Shirt Recall**: Improved from 75.0% (SVM HOG) $\to$ **76.3%** (CNN3Block-GAP).
+   - **Total Misclassifications**: Reduced from 870 test errors (SVM) to only **691 test errors** (CNN) — eliminating 179 errors.
+3. **Storage & Speed Pareto Frontier**: `CNN3Block-GAP` achieves a $60\times$ parameter reduction (305k vs. 18.1M) and an $8\times$ CPU inference speedup (0.68 ms vs. 5.36 ms) compared to the kernel SVM.
+4. **Grad-CAM Interpretability**: Saliency heatmaps confirm that the CNN focuses on collar curvature, neckline depth, and hemline structure, distinguishing garments that fixed HOG grids fail to separate.
 
 ## Presentation Studio & Diagnostic Tools
 The project includes a comprehensive, interactive Streamlit diagnostic and presentation studio (`app/streamlit_app.py`):
@@ -43,16 +63,20 @@ fashion-mnist-phase1/
 │   ├── eda.py                all EDA functions (quality, balance, PCA, t-SNE, ...)
 │   ├── features.py           pixels, HOG, 16 shape statistics
 │   ├── feature_experiments.py HOG ablation, PCA sweep, feature-set probe
-│   ├── models.py             model factories, hyper-parameter grids, parameter counting
+│   ├── models.py             classical model factories, grids, parameter counting
 │   ├── experiment.py         tune on val -> refit train+val -> single test evaluation
 │   ├── analysis.py           confusion, McNemar, bootstrap CI, error analysis, plots
-│   └── plotting.py
-├── scripts/                  00_check_splits.py · 01_eda.py · 02_feature_engineering.py · 03_train_models.py · 04_analysis.py · run_all.sh
-├── notebooks/                01_eda · 02_feature_engineering · 03_models_and_error_analysis (executed)
-├── results/figures|tables|models   every figure (PNG), table (CSV/JSON), saved models
-├── app/streamlit_app.py      interactive presentation studio & live demo
-├── report/main.tex, main.pdf IEEE-format report (+ figures/)
-└── docs/                     presentation script, viva Q&A, glossary
+│   ├── plotting.py           consistent styling and palettes
+│   ├── cnn_models.py         PyTorch CNNs (CNN2Block, CNN3BlockGAP)
+│   ├── cnn_dataset.py        PyTorch Dataset & DataLoader with spatial augmentation
+│   ├── cnn_trainer.py        AdamW + CosineAnnealing + EarlyStopping + profiling
+│   └── cnn_explain.py        Grad-CAM saliency heatmaps for upper-body garments
+├── scripts/                  00_check_splits.py · 01_eda.py · 02_feature_engineering.py · 03_train_models.py · 04_analysis.py · 05_train_cnn.py · 06_cnn_analysis.py · run_all.sh
+├── notebooks/                01_eda · 02_feature_engineering · 03_models_and_error_analysis · 04_deep_learning_cnn
+├── results/figures|tables|models   every figure (PNG), table (CSV/JSON), saved models (.joblib, .pt)
+├── app/streamlit_app.py      interactive 8-page presentation studio & Grad-CAM visualizer
+├── report/main.tex           comprehensive IEEE-format conference paper (+ figures/)
+└── docs/                     presentation guide, viva Q&A, presentation slides
 ```
 
 ## How to run
