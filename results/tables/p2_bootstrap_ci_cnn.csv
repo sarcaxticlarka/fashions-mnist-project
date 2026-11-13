@@ -1,0 +1,5 @@
+model,features,accuracy,ci_low,ci_high
+CNN2Block,pixels (learned CNN),0.9216,0.9159,0.9269
+CNN2Block_Aug,pixels (learned CNN),0.9141,0.9084975,0.9196
+CNN3Block_GAP,pixels (learned CNN),0.9309,0.9257,0.9359025
+CNN3Block_GAP_NoAug,pixels (learned CNN),0.9138,0.9082,0.9192

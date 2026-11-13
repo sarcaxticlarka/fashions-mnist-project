@@ -1,0 +1,9 @@
+model,upper_body_errors,other_errors
+"LogReg (Pixels)
+Phase 1 start",1119,425
+"SVM-RBF (HOG)
+Phase 1 best",646,224
+"CNN2Block
+Phase 2",599,185
+"CNN3Block GAP
+Phase 2 best",522,169

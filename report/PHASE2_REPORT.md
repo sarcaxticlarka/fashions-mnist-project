@@ -1,7 +1,7 @@
 # Phase 2 Technical Report: Deep Convolutional Neural Networks on Fashion-MNIST
 **Project 11 · Automatic Clothing Category Recognition**  
 *Department of CS/AI, Newton School of Technology*  
-*Course: Advanced Machine Learning*  
+*Course: Deep Learning*  
 *Authors: MD. Sajjan, Sibtain Ahmed Qureshi, Syed Darain Qamar, Antik Mandal, Abuzar Haideri*  
 
 ---
@@ -176,14 +176,29 @@ $$L_{\text{Grad-CAM}}^c = \text{ReLU}\left(\sum_{k}\alpha_k^c A^k\right)$$
 ## 7. Interactive Deliverables
 
 All Phase 2 outcomes have been embedded directly into the project's interactive tools:
-1. **Streamlit Studio (`app/streamlit_app.py`)**:
-   - Added **Page 8: Phase 2 (CNN Deep Learning)**.
-   - Features an interactive **Grad-CAM Visualizer**: evaluators can select any test sample or preset, run it live through the trained CNN, view class prediction probabilities, and inspect the superimposed Grad-CAM heatmap.
-   - Displays the unified leaderboard, training loss curves, and McNemar test tables.
-2. **Jupyter Notebook (`notebooks/04_deep_learning_cnn.ipynb`)**:
-   - Fully executed notebook containing code, training curves, confusion comparisons, and Pareto plots.
-3. **PowerPoint Presentation (`docs/Fashion-MNIST_Phase2_Presentation.pptx`)**:
-   - 10-slide high-resolution presentation deck covering all Phase 2 findings.
-4. **Viva Voce Prep (`docs/viva_qa.md`)**:
-   - Complete Q&A section explaining model selection, GAP theory, McNemar results, and alternate model rationales.
+1. **Streamlit Studio (`app/streamlit_app.py`)**: 9 pages, including a live comparison (SVM vs first CNN vs final model, with Grad-CAM and photo upload), Phase 2 experiments, and an errors & reliability page with an interactive abstain threshold.
+2. **Jupyter Notebook (`notebooks/04_deep_learning_cnn.ipynb`)**: training curves, confusion comparisons and Pareto plots for the first CNNs.
+3. **PowerPoint Presentation (`docs/Fashion-MNIST_Phase2_Presentation.pptx`)**: 16 slides, built by `scripts/build_phase2_deck.js` from the result files.
+4. **Presentation guide (`docs/presentation_guide.md`)**: speaker plan, demo flow, numbers cheat-sheet and all likely questions with answers.
 
+
+---
+
+## 8. Addendum (revision): controlled ablation and corrections
+
+The full revised report is `report/phase2_full_report.pdf` (source: `report/phase2_full_report.tex`); the new deck is `docs/Fashion-MNIST_Phase2_Presentation.pptx`.
+
+- **New control run `CNN3Block_GAP_NoAug`** (`scripts/07_ablation_gap_noaug.py`) completes a 2×2 grid. Test accuracy: CNN2Block 92.16% / CNN2Block_Aug 91.41% / CNN3Block_GAP_NoAug 91.38% / CNN3Block_GAP **93.09%**. Depth + GAP only pays off together with augmentation (+1.71 pts, McNemar p = 1.0×10⁻¹² between the two GAP runs).
+- **Correction to Section 3B:** augmentation did not act as a "too strong regulariser". CNN2Block_Aug was still improving at its final epoch and has higher validation than training accuracy, which points to under-training within the 18-epoch budget.
+- **Correction to Section 6:** the Grad-CAM maps are more mixed than "squarely at the collar"; several are diffuse. This is listed as a limitation in the final report.
+- **95% bootstrap CIs for CNNs** (`results/tables/p2_bootstrap_ci_cnn.csv`): CNN3Block_GAP 92.57–93.59%, fully above SVM-RBF (HOG) 90.76–91.85%.
+- Upper-body classes are the true class of 76% of CNN3Block_GAP errors (74% for the SVM), so the bottleneck became more concentrated. All figures: `scripts/08_phase2_story_figures.py` → `report/figures/p2_*.png`.
+
+## 9. Final Phase 2 model (summary)
+
+Full details: `report/phase2_full_report.pdf`, Section 5.
+
+- 40-epoch training with 3 seeds: CNN3Block-GAP 93.80% ± 0.21, ResNetSmall 94.62% ± 0.13.
+- **Final model = 3 × ResNetSmall + mirrored-image TTA + temperature scaling (+ Shirt rule): 95.20% test accuracy** (95% CI 94.78–95.62%), 480 errors, Shirt recall 85.4%.
+- Calibration error (ECE) 7.6% → 1.3%; with abstention it answers 87.7% of images at 98.56% accuracy.
+- McNemar vs SVM-RBF (HOG): p = 6.7×10⁻⁵⁰; vs the first CNN3Block-GAP: p = 2.9×10⁻²⁷.

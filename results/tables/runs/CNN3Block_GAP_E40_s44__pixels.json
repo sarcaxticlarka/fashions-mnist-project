@@ -1,0 +1,33 @@
+{
+  "model": "CNN3Block_GAP_E40_s44",
+  "family": "CNN3Block_GAP_E40",
+  "arch": "CNN3Block_GAP",
+  "seed": 44,
+  "features": "pixels (learned CNN)",
+  "dim": 784,
+  "epochs_run": 40,
+  "best_epoch": 39,
+  "val_acc": 0.9445,
+  "val_macro_f1": 0.9444530938240195,
+  "accuracy": 0.938,
+  "macro_f1": 0.9376830905528912,
+  "macro_precision": 0.9376429187840394,
+  "fit_seconds": 411.2,
+  "infer_ms_per_image": 0.7034,
+  "params": 304682,
+  "label_smoothing": 0.0,
+  "random_erasing": 0.0,
+  "per_class_recall": {
+    "T-shirt/top": 0.904,
+    "Trouser": 0.99,
+    "Pullover": 0.917,
+    "Dress": 0.938,
+    "Coat": 0.923,
+    "Sandal": 0.987,
+    "Shirt": 0.787,
+    "Sneaker": 0.973,
+    "Bag": 0.996,
+    "Ankle boot": 0.965
+  },
+  "device": "mps"
+}

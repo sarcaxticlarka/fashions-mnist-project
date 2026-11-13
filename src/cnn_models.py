@@ -115,11 +115,59 @@ class CNN3BlockGAP(nn.Module):
         return self.block3[3]
 
 
+class BasicBlock(nn.Module):
+    """ResNet basic block: two 3x3 convs with an identity (or 1x1 projection) shortcut."""
+    def __init__(self, c_in, c_out, stride=1):
+        super().__init__()
+        self.conv1 = nn.Conv2d(c_in, c_out, 3, stride=stride, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(c_out)
+        self.conv2 = nn.Conv2d(c_out, c_out, 3, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(c_out)
+        self.short = nn.Identity()
+        if stride != 1 or c_in != c_out:
+            self.short = nn.Sequential(nn.Conv2d(c_in, c_out, 1, stride=stride, bias=False), nn.BatchNorm2d(c_out))
+
+    def forward(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = self.bn2(self.conv2(out))
+        return F.relu(out + self.short(x))
+
+
+class ResNetSmall(nn.Module):
+    """Compact residual network for 28x28 inputs (final Phase 2 model family).
+
+    Stem: Conv(1->32) -> BN -> ReLU                      (32x28x28)
+    Stage 1: 2 x BasicBlock(32)                          (32x28x28)
+    Stage 2: 2 x BasicBlock(64),  first with stride 2   (64x14x14)
+    Stage 3: 2 x BasicBlock(128), first with stride 2   (128x7x7)
+    GAP -> Dropout(0.2) -> Linear(128, 10)
+    Residual shortcuts let the network go deeper (13 conv layers) without vanishing gradients.
+    """
+    def __init__(self, num_classes=10, dropout=0.2, width=32):
+        super().__init__()
+        w = width
+        self.stem = nn.Sequential(nn.Conv2d(1, w, 3, padding=1, bias=False), nn.BatchNorm2d(w), nn.ReLU(inplace=True))
+        self.stage1 = nn.Sequential(BasicBlock(w, w), BasicBlock(w, w))
+        self.stage2 = nn.Sequential(BasicBlock(w, 2 * w, stride=2), BasicBlock(2 * w, 2 * w))
+        self.stage3 = nn.Sequential(BasicBlock(2 * w, 4 * w, stride=2), BasicBlock(4 * w, 4 * w))
+        self.gap = nn.AdaptiveAvgPool2d((1, 1))
+        self.classifier = nn.Sequential(nn.Flatten(), nn.Dropout(dropout), nn.Linear(4 * w, num_classes))
+
+    def forward(self, x):
+        x = self.stage3(self.stage2(self.stage1(self.stem(x))))
+        return self.classifier(self.gap(x))
+
+    def get_last_conv_layer(self):
+        return self.stage3[-1].conv2
+
+
 def get_model(name: str, num_classes: int = 10, **kwargs):
     """Model factory."""
+    if name.startswith("ResNetSmall"):
+        return ResNetSmall(num_classes=num_classes, **kwargs)
     if name in ("CNN2Block", "CNN2Block_Aug"):
         return CNN2Block(num_classes=num_classes, **kwargs)
-    if name in ("CNN3Block_GAP", "CNN3BlockGAP"):
+    if name in ("CNN3Block_GAP", "CNN3BlockGAP") or name.startswith("CNN3Block_GAP"):
         return CNN3BlockGAP(num_classes=num_classes, **kwargs)
     raise ValueError(f"Unknown CNN model name: {name}")
 

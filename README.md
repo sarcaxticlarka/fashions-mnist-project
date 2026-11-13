@@ -1,51 +1,30 @@
-# Automatic Clothing Category Recognition — Phase 1 & Phase 2
+# Automatic Clothing Category Recognition — Phase 1 & Phase 2 (final)
 
 **Project 11 · Inventory image tagging via handcrafted features and Convolutional Neural Networks.**
 This repository contains the complete deliverables for:
 - **Phase 1 (Classical Machine Learning):** Raw pixels vs. HOG descriptors evaluated across Logistic Regression, $k$-NN, Random Forest, and RBF Support Vector Machines.
-- **Phase 2 (Deep Learning):** End-to-end learned hierarchical spatial representations evaluated across baseline 2-block ConvNets, spatial data augmentation, and deep 3-block ConvNets with Global Average Pooling (GAP) and Grad-CAM interpretability.
+- **Phase 2 (Deep Learning, final):** CNNs on raw pixels — a controlled 2×2 ablation (depth/GAP × augmentation), 40-epoch training with 3 seeds, a residual network (ResNetSmall), an ensemble with test-time augmentation, temperature-scaled confidence, an abstain option and a Shirt-aware decision rule.
 
-## Headline Results (Test set, 10,000 images)
+## Headline Results (test set, 10,000 images)
 
-### Unified Leaderboard (Phase 1 vs. Phase 2)
+| Model | Test acc | Macro-F1 | Errors | Shirt recall | Notes |
+|---|---|---|---|---|---|
+| SVM-RBF on HOG (Phase 1 best) | 91.30% | 0.9130 | 870 | 75.0% | 18.1M stored numbers, 5.36 ms/img |
+| CNN3Block-GAP (first Phase 2 run, 20 epochs) | 93.09% | 0.9306 | 691 | 76.3% | 305k weights, 0.68 ms/img |
+| CNN3Block-GAP, 40 epochs (3 seeds) | 93.80% ± 0.21 | – | – | 79.1% | under-training fixed |
+| ResNetSmall (3 seeds) | 94.62% ± 0.13 | – | – | 82.7% | 696k weights |
+| **Final model: 3 × ResNetSmall + flip TTA + calibration** | **95.20%** (CI 94.78–95.62) | **0.9520** | **480** | **85.4%** | ECE 7.6% → 1.3%; 98.56% accurate on the 87.7% of images it answers |
 
-| Phase | Model | Representation | Test Acc | Macro-F1 | CPU Latency | Parameters |
-|---|---|---|---|---|---|---|
-| **Phase 2 (Deep Learning)** | **CNN3Block-GAP** | **Learned CNN filters** | **93.09%** | **0.9306** | **0.68 ms** | **304.7k** |
-| Phase 2 (Deep Learning) | CNN2Block | Learned CNN filters | 92.16% | 0.9212 | 0.18 ms | 421.7k |
-| Phase 2 (Deep Learning) | CNN2Block + Aug | Learned CNN filters | 91.41% | 0.9140 | 0.22 ms | 421.7k |
-| Phase 1 (Classical ML) | SVM-RBF | HOG + 16 shape stats | 91.37% | 0.9137 | 5.28 ms | 17.5M |
-| Phase 1 (Classical ML) | **SVM-RBF** | **HOG (Phase 1 Best)** | **91.30%** | **0.9130** | **5.36 ms** | **18.1M** |
-| Phase 1 (Classical ML) | SVM-RBF | Raw Pixels | 89.88% | 0.8985 | 4.53 ms | 15.0M |
-| Phase 1 (Classical ML) | Logistic Regression | HOG + stats | 88.94% | 0.8890 | 0.001 ms | 8.8k |
-| Phase 1 (Classical ML) | Logistic Regression | HOG | 88.52% | 0.8848 | 0.001 ms | 8.7k |
-| Phase 1 (Classical ML) | Random Forest | HOG + stats | 88.21% | 0.8811 | 0.041 ms | 2.5M |
-| Phase 1 (Classical ML) | Random Forest | HOG | 87.81% | 0.8769 | 0.042 ms | 3.2M |
-| Phase 1 (Classical ML) | $k$-NN | HOG | 87.74% | 0.8777 | 0.271 ms | 51.8M |
-| Phase 1 (Classical ML) | Random Forest | Raw Pixels | 87.60% | 0.8746 | 0.037 ms | 2.5M |
-| Phase 1 (Classical ML) | $k$-NN | Raw Pixels | 85.61% | 0.8564 | 0.316 ms | 47.0M |
-| Phase 1 (Classical ML) | Logistic Regression | Raw Pixels | 84.56% | 0.8447 | 0.001 ms | 7.9k |
+Key findings:
+1. **Learned features beat handcrafted ones.** Final model vs SVM: McNemar χ² = 220.6, p = 6.7×10⁻⁵⁰; vs the first CNN: p = 2.9×10⁻²⁷.
+2. **Depth + GAP only help together with augmentation** (2×2 ablation: 92.16 / 91.41 / 91.38 / 93.09%).
+3. **The first runs were under-trained**: the same GAP network reaches 93.80% on average with 40 epochs.
+4. **Shirt remains the hardest class** (85.4%) but gained +10.4 points over Phase 1; low-confidence images (26% of them Shirts) can be sent to a human.
 
-### Key Scientific Findings
-1. **Statistical Superiority (McNemar Test)**: `CNN3Block-GAP` significantly outperforms the best classical model (SVM-RBF on HOG): $\Delta \text{acc} = +1.79\%$, $\chi^2 = 44.56, p = 2.46 \times 10^{-11} \ll 0.001$.
-2. **Upper-Body Garment Bottleneck Resolution**:
-   - **Pullover Recall**: Increased from 85.6% (SVM HOG) $\to$ **90.6%** (CNN3Block-GAP).
-   - **Coat Recall**: Increased from 87.5% (SVM HOG) $\to$ **92.4%** (CNN3Block-GAP).
-   - **Shirt Recall**: Improved from 75.0% (SVM HOG) $\to$ **76.3%** (CNN3Block-GAP).
-   - **Total Misclassifications**: Reduced from 870 test errors (SVM) to only **691 test errors** (CNN) — eliminating 179 errors.
-3. **Storage & Speed Pareto Frontier**: `CNN3Block-GAP` achieves a $60\times$ parameter reduction (305k vs. 18.1M) and an $8\times$ CPU inference speedup (0.68 ms vs. 5.36 ms) compared to the kernel SVM.
-4. **Grad-CAM Interpretability**: Saliency heatmaps confirm that the CNN focuses on collar curvature, neckline depth, and hemline structure, distinguishing garments that fixed HOG grids fail to separate.
+All Phase 2 numbers are regenerated from `results/tables` by `scripts/08`–`11`; the report (`report/phase2_full_report.pdf`), the 16-slide deck (`docs/Fashion-MNIST_Phase2_Presentation.pptx`, rebuilt with `node scripts/build_phase2_deck.js`; `FULL_DECK=1` adds 8 detail slides) and the app read the same files.
 
-## Presentation Studio & Diagnostic Tools
-The project includes a comprehensive, interactive Streamlit diagnostic and presentation studio (`app/streamlit_app.py`):
-- **Design System & Typography**: Custom CSS theme with Google Fonts (`Outfit` & `Inter`), glassmorphic KPI cards, responsive layout, and dark/light mode tokens.
-- **Interactive Multi-View Feature Studio (Live Demo)**: Real-time 4-viewport synchronized inspection:
-  - Raw $28\times28$ Grayscale image and intensity statistics.
-  - Sobel edge gradient magnitude map.
-  - Live computed HOG orientation vector field.
-- **Edge-Case Preset Gallery**: Quick-select buttons for famous ambiguous test images (e.g. *Shirt #14*, *Coat vs. Pullover #42*, *Sandal #7*, *Sneaker #23*).
-- **Head-to-Head Model Comparator**: Real-time evaluation of any two models side-by-side: calculates accuracy delta, macro-F1 gain, parameter counts, and inference latency speedup ratios.
-- **Interactive Confusion Pair Inspector**: Diagnostic visual tool allowing evaluators to select specific misclassification pairs (e.g. *Shirt $\to$ T-shirt*) to view the exact error instances.
+## Streamlit studio (`app/streamlit_app.py`)
+Nine pages: overview, **live model comparison** (any test image or an uploaded photo; SVM vs first CNN vs final model with calibrated probabilities, abstain flag and Grad-CAM), feature views, Phase 1, Phase 2 models & training curves, experiments (2×2 ablation, seeds, improvement steps, McNemar), errors & reliability (per-class recall, confusion heat-map, Shirt rule, calibration, interactive abstain threshold), design decisions, and leaderboard with downloads of the report and slides. Every chart labels its axes in plain words.
 
 ## Dataset
 Fashion-MNIST by Zalando Research — 70,000 grayscale 28×28 images across 10 clothing classes
@@ -76,7 +55,7 @@ fashion-mnist-phase1/
 ├── results/figures|tables|models   every figure (PNG), table (CSV/JSON), saved models (.joblib, .pt)
 ├── app/streamlit_app.py      interactive 8-page presentation studio & Grad-CAM visualizer
 ├── report/main.tex           comprehensive IEEE-format conference paper (+ figures/)
-└── docs/                     presentation guide, viva Q&A, presentation slides
+└── docs/                     presentation guide (speaker plan + Q&A), Phase 1 & Phase 2 slides
 ```
 
 ## How to run

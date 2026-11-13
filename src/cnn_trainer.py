@@ -67,11 +67,13 @@ def train_model(
     weight_decay: float = 1e-4,
     patience: int = 6,
     log_fn=print,
+    seed: int = SEED,
+    label_smoothing: float = 0.0,
 ) -> Tuple[nn.Module, Dict[str, Any]]:
     """Train model with AdamW, Cosine Annealing, and Early Stopping on validation macro-F1."""
-    set_seed()
+    set_seed(seed)
     model = model.to(device)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-5)
 

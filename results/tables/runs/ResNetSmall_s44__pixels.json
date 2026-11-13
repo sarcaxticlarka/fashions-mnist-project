@@ -1,0 +1,33 @@
+{
+  "model": "ResNetSmall_s44",
+  "family": "ResNetSmall",
+  "arch": "ResNetSmall",
+  "seed": 44,
+  "features": "pixels (learned CNN)",
+  "dim": 784,
+  "epochs_run": 40,
+  "best_epoch": 40,
+  "val_acc": 0.95075,
+  "val_macro_f1": 0.9507620344946816,
+  "accuracy": 0.9448,
+  "macro_f1": 0.9446839432142697,
+  "macro_precision": 0.9446328283654193,
+  "fit_seconds": 959.9,
+  "infer_ms_per_image": 1.7219,
+  "params": 696042,
+  "label_smoothing": 0.1,
+  "random_erasing": 0.25,
+  "per_class_recall": {
+    "T-shirt/top": 0.897,
+    "Trouser": 0.994,
+    "Pullover": 0.928,
+    "Dress": 0.947,
+    "Coat": 0.929,
+    "Sandal": 0.987,
+    "Shirt": 0.827,
+    "Sneaker": 0.98,
+    "Bag": 0.995,
+    "Ankle boot": 0.964
+  },
+  "device": "mps"
+}

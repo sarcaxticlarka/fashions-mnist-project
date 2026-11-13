@@ -33,21 +33,25 @@ class FashionMNISTDataset(Dataset):
         return img, target
 
 
-def get_augment_transform():
-    """Standard spatial augmentation for 28x28 clothing items."""
-    return transforms.Compose([
-        transforms.RandomCrop(28, padding=2, padding_mode="reflect"),
-        transforms.RandomHorizontalFlip(p=0.5),
-    ])
+def get_augment_transform(random_erasing: float = 0.0):
+    """Standard spatial augmentation for 28x28 clothing items.
+
+    random_erasing > 0 additionally blanks a random rectangle with that probability
+    (forces the network to use more than one cue, e.g. not only the collar)."""
+    t = [transforms.RandomCrop(28, padding=2, padding_mode="reflect"),
+         transforms.RandomHorizontalFlip(p=0.5)]
+    if random_erasing > 0:
+        t.append(transforms.RandomErasing(p=random_erasing, scale=(0.02, 0.15), value=0.0))
+    return transforms.Compose(t)
 
 
 def build_dataloaders(S: Splits, batch_size: int = 128, augment_train: bool = False,
-                      num_workers: int = 0, seed: int = SEED):
+                      num_workers: int = 0, seed: int = SEED, random_erasing: float = 0.0):
     """Build train, validation, trainval, and test DataLoaders."""
     g = torch.Generator()
     g.manual_seed(seed)
 
-    train_tf = get_augment_transform() if augment_train else None
+    train_tf = get_augment_transform(random_erasing) if augment_train else None
 
     ds_tr = FashionMNISTDataset(S.X_tr, S.y_tr, transform=train_tf)
     ds_val = FashionMNISTDataset(S.X_val, S.y_val, transform=None)
