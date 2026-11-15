@@ -53,7 +53,7 @@ fashion-mnist-phase1/
 ├── scripts/                  00_check_splits.py · 01_eda.py · 02_feature_engineering.py · 03_train_models.py · 04_analysis.py · 05_train_cnn.py · 06_cnn_analysis.py · run_all.sh
 ├── notebooks/                01_eda · 02_feature_engineering · 03_models_and_error_analysis · 04_deep_learning_cnn
 ├── results/figures|tables|models   every figure (PNG), table (CSV/JSON), saved models (.joblib, .pt)
-├── app/streamlit_app.py      interactive 8-page presentation studio & Grad-CAM visualizer
+├── app/streamlit_app.py      interactive 9-page presentation studio & Grad-CAM visualizer
 ├── report/main.tex           comprehensive IEEE-format conference paper (+ figures/)
 └── docs/                     presentation guide (speaker plan + Q&A), Phase 1 & Phase 2 slides
 ```
@@ -102,4 +102,3 @@ Build the report separately with `cd report && tectonic main.tex`, or upload
 2. Hyper-parameters chosen on validation; refit on train+val; test evaluated once.
 3. Same seed (42), scaling policy and grid budget for every feature set.
 4. HOG computed on upright images (orientation verified in EDA).
-
