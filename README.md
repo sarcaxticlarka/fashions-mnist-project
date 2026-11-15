@@ -29,7 +29,6 @@ Nine pages: overview, **live model comparison** (any test image or an uploaded p
 ## Dataset
 Fashion-MNIST by Zalando Research — 70,000 grayscale 28×28 images across 10 clothing classes
 (60k train / 10k test). Source: <https://github.com/zalandoresearch/fashion-mnist>.
-
 ## Folder structure
 
 ```
