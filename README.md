@@ -49,7 +49,7 @@ fashion-mnist-phase1/
 │   ├── cnn_dataset.py        PyTorch Dataset & DataLoader with spatial augmentation
 │   ├── cnn_trainer.py        AdamW + CosineAnnealing + EarlyStopping + profiling
 │   └── cnn_explain.py        Grad-CAM saliency heatmaps for upper-body garments
-├── scripts/                  00_check_splits.py · 01_eda.py · 02_feature_engineering.py · 03_train_models.py · 04_analysis.py · 05_train_cnn.py · 06_cnn_analysis.py · run_all.sh
+├── scripts/                  00_check_splits.py · 01_eda.py · 02_feature_engineering.py · 03_train_models.py · 04_analysis.py · 05_train_cnn.py · 06_cnn_analysis.py · 07_ablation_gap_noaug.py · 08_phase2_story_figures.py · 09_train_final_models.py · 10_ensemble_calibration.py · 11_report_numbers.py · run_all.sh
 ├── notebooks/                01_eda · 02_feature_engineering · 03_models_and_error_analysis · 04_deep_learning_cnn
 ├── results/figures|tables|models   every figure (PNG), table (CSV/JSON), saved models (.joblib, .pt)
 ├── app/streamlit_app.py      interactive 9-page presentation studio & Grad-CAM visualizer
